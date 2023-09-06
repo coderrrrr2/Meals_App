@@ -21,12 +21,14 @@ class _CategoriesScreenState extends State<CategoriesScreen>
   void initState() {
     super.initState();
     animationController = AnimationController(
-        vsync: this,
-        duration: const Duration(
-          seconds: 3,
-        ),
-        lowerBound: 0,
-        upperBound: 1);
+      vsync: this,
+      duration: const Duration(
+        milliseconds: 200,
+      ),
+      lowerBound: 0,
+      upperBound: 1,
+    );
+    animationController.forward();
   }
 
   @override
@@ -53,23 +55,32 @@ class _CategoriesScreenState extends State<CategoriesScreen>
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-        animation: animationController,
-        child: GridView(
-          padding: const EdgeInsets.all(20),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              childAspectRatio: 3 / 2,
-              mainAxisSpacing: 20,
-              crossAxisSpacing: 20),
-          children: [
-            for (final category in availableCategories)
-              CategoriesGridView(
-                  category: category,
-                  onSelectCategoryGridItem: () {
-                    selectCategory(context, category);
-                  })
-          ],
+      animation: animationController,
+      child: GridView(
+        padding: const EdgeInsets.all(20),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            childAspectRatio: 3 / 2,
+            mainAxisSpacing: 20,
+            crossAxisSpacing: 20),
+        children: [
+          for (final category in availableCategories)
+            CategoriesGridView(
+                category: category,
+                onSelectCategoryGridItem: () {
+                  selectCategory(context, category);
+                })
+        ],
+      ),
+      builder: (context, child) => SlideTransition(
+        position: Tween(
+          begin: const Offset(0, 0.3),
+          end: const Offset(0, 0),
+        ).animate(
+          CurvedAnimation(parent: animationController, curve: Curves.easeInOut),
         ),
-        builder: (context, child) => Padding(padding: child));
+        child: child,
+      ),
+    );
   }
 }

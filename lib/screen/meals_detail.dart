@@ -34,21 +34,32 @@ class MealDetail extends ConsumerWidget {
       appBar: AppBar(
         actions: [
           IconButton(
-            onPressed: () {
-              final wasAdded = ref
-                  .read(favouriteMealsProvider.notifier)
-                  .manageFavouriteMealStatusState(mealItem);
+              onPressed: () {
+                final wasAdded = ref
+                    .read(favouriteMealsProvider.notifier)
+                    .manageFavouriteMealStatusState(mealItem);
 
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                      wasAdded ? 'Meal added as Favourite' : 'Meal Removed'),
-                  duration: const Duration(seconds: 1),
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                        wasAdded ? 'Meal added as Favourite' : 'Meal Removed'),
+                    duration: const Duration(seconds: 1),
+                  ),
+                );
+              },
+              icon: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
+                transitionBuilder: (child, animation) {
+                  return RotationTransition(
+                    turns: Tween(begin: 0.8, end: 1.0).animate(animation),
+                    child: child,
+                  );
+                },
+                child: Icon(
+                  isFavourite ? Icons.star : Icons.star_border,
+                  key: ValueKey(isFavourite),
                 ),
-              );
-            },
-            icon: Icon(isFavourite ? Icons.star : Icons.star_border),
-          )
+              ))
         ],
         title: Text(
           mealItem.title,
@@ -60,12 +71,15 @@ class MealDetail extends ConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            FadeInImage(
-              placeholder: MemoryImage(kTransparentImage),
-              image: NetworkImage(mealItem.imageUrl),
-              fit: BoxFit.cover,
-              height: 200,
-              width: double.infinity,
+            Hero(
+              tag: mealItem.id,
+              child: FadeInImage(
+                placeholder: MemoryImage(kTransparentImage),
+                image: NetworkImage(mealItem.imageUrl),
+                fit: BoxFit.cover,
+                height: 200,
+                width: double.infinity,
+              ),
             ),
             const SizedBox(
               height: 8,
